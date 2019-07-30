@@ -11,29 +11,31 @@ rtmp {
         listen 1935;
         chunk_size 4000;
 
-        application live {
+        application stream {
             live on;
 
-            exec ffmpeg -i rtmp://localhost:1935/live/$name
-              -vcodec libx264 -b:v 2800000 -r 30.00 -s 1920x1080 -aspect 1920:1080 -threads 4 -profile:v high -preset superfast -sc_threshold 0 -g 30 -maxrate 2800K -bufsize 2800K -acodec copy -f flv -y rtmp://localhost:1935/hls/$name_1080p2800kbs
-              -vcodec libx264 -b:v 1400000 -r 30.00 -s 1280x720 -aspect 1280:720 -threads 4 -profile:v high -preset superfast -sc_threshold 0 -g 30 -maxrate 1400K -bufsize 1400K -acodec copy -f flv -y rtmp://localhost:1935/hls/$name_720p1400kbs
-              -vcodec libx264 -b:v 800000 -r 30.00 -s 854x480 -aspect 854:480 -threads 4 -profile:v main -preset superfast -sc_threshold 0 -g 30 -maxrate 800K -bufsize 800K -acodec copy -f flv -y rtmp://localhost:1935/hls/$name_480p800kbs
-              -vcodec libx264 -b:v 400000 -r 30.00 -s 640x360 -aspect 640:360 -threads 4 -profile:v main -preset superfast -sc_threshold 0 -g 30 -maxrate 400K -bufsize 400K -acodec copy -f flv -y rtmp://localhost:1935/hls/$name_360p400kbs;
+            exec ffmpeg -i rtmp://localhost:1935/stream/$name
+              -c:a libfdk_aac -b:a 128k -c:v libx264 -b:v 2500k -f flv -g 30 -r 30 -s 1280x720 -preset superfast -profile:v baseline rtmp://localhost:1935/hls/$name_720p2628kbs
+              -c:a libfdk_aac -b:a 128k -c:v libx264 -b:v 1000k -f flv -g 30 -r 30 -s 854x480 -preset superfast -profile:v baseline rtmp://localhost:1935/hls/$name_480p1128kbs
+              -c:a libfdk_aac -b:a 128k -c:v libx264 -b:v 750k -f flv -g 30 -r 30 -s 640x360 -preset superfast -profile:v baseline rtmp://localhost:1935/hls/$name_360p878kbs
+              -c:a libfdk_aac -b:a 128k -c:v libx264 -b:v 400k -f flv -g 30 -r 30 -s 426x240 -preset superfast -profile:v baseline rtmp://localhost:1935/hls/$name_240p528kbs
+              -c:a libfdk_aac -b:a 64k -c:v libx264 -b:v 200k -f flv -g 15 -r 15 -s 426x240 -preset superfast -profile:v baseline rtmp://localhost:1935/hls/$name_240p264kbs;
         }
 
         application hls {
             live on;
             hls on;
             hls_fragment_naming system;
-            hls_fragment 1;
+            hls_fragment 5;
             hls_playlist_length 10;
             hls_path /opt/data/hls;
             hls_nested on;
 
-            hls_variant _1080p2800kbs BANDWIDTH=3000000,RESOLUTION=1920x1080;
-            hls_variant _720p1400kbs BANDWIDTH=1600000,RESOLUTION=1280x720;
-            hls_variant _480p800kbs BANDWIDTH=1000000,RESOLUTION=854x480;
-            hls_variant _360p400kbs BANDWIDTH=600000,RESOLUTION=640x360;
+            hls_variant _720p2628kbs BANDWIDTH=2628000,RESOLUTION=1280x720;
+            hls_variant _480p1128kbs BANDWIDTH=1128000,RESOLUTION=854x480;
+            hls_variant _360p878kbs BANDWIDTH=878000,RESOLUTION=640x360;
+            hls_variant _240p528kbs BANDWIDTH=528000,RESOLUTION=426x240;
+            hls_variant _240p264kbs BANDWIDTH=264000,RESOLUTION=426x240;
         }
     }
 }
