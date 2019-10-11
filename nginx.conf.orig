@@ -14,14 +14,13 @@ rtmp {
         application live {
             live on;
             hls on;
-            hls_nested on; # In this mode, a subdirectory of hls_path is created for each stream
+            hls_fragment_naming system;
             hls_fragment 2;
             hls_playlist_length 30m;
-            hls_datetime system;
-            hls_cleanup on;
-            hls_continuous on;
             hls_path /opt/data/hls;
+            hls_nested on;
 
+            hls_variant _360p400kbs BANDWIDTH=600000,RESOLUTION=640x360;
         }
     }
 }
